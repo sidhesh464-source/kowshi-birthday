@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0" />
+    <title>Happy Birthday kowshi!!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            background: #111;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            overflow: hidden;
+            position: relative;
+            transform: translateZ(0);
+            /* Constraints position: fixed elements to body */
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            font-family: 'Pacifico', cursive;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ── Loading ── */
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 1s ease;
+        }
+
+        #loading h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(2rem, 9vw, 3.8rem);
+            color: #00bcd4;
+            text-align: center;
+            animation: glowPulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes glowPulse {
+            from {
+                opacity: 0.5;
+                text-shadow: 0 0 0 transparent;
+            }
+
+            to {
+                opacity: 1;
+                text-shadow: 0 0 20px rgba(0, 188, 212, 0.4);
+            }
+        }
+
+        /* ── 3D Scene ── */
+        #scene {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: clamp(600px, 100vw, 1200px);
+            perspective-origin: 50% 38%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #drag-container {
+            position: relative;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        #spin-container {
+            position: relative;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        /* ── Photos ── */
+        #spin-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-style: preserve-3d;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 5px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 188, 212, 0.15);
+            -webkit-box-reflect: below 6px linear-gradient(transparent 60%, rgba(0, 0, 0, 0.35));
+            transition: box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        #spin-container img:hover {
+            box-shadow: 0 20px 55px rgba(0, 188, 212, 0.55), 0 0 30px rgba(0, 188, 212, 0.3);
+        }
+
+        /* ── Center Text (floor) ── */
+        #spin-container p {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(90deg);
+            font-family: 'Dancing Script', cursive;
+            font-weight: 700;
+            color: #00bcd4;
+            text-align: center;
+            line-height: 1.25;
+            pointer-events: none;
+            white-space: nowrap;
+            text-shadow: 0 2px 8px rgba(0, 188, 212, 0.2);
+            animation: fadeIn 3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ── Ground shadow circle ── */
+        #ground {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(90deg);
+            background: radial-gradient(ellipse at center, rgba(0, 188, 212, 0.25) 0%, transparent 68%);
+            border-radius: 50%;
+        }
+
+        /* ── Spin animations ── */
+        @keyframes spin {
+            from {
+                transform: rotateY(0deg);
+            }
+
+            to {
+                transform: rotateY(360deg);
+            }
+        }
+
+        @keyframes spinRevert {
+            from {
+                transform: rotateY(360deg);
+            }
+
+            to {
+                transform: rotateY(0deg);
+            }
+        }
+
+        /* ── Final Button ── */
+        #final-btn {
+            position: fixed;
+            bottom: clamp(16px, 4vh, 32px);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 500;
+            background: linear-gradient(135deg, #ff758c, #ff4d6d);
+            color: #fff;
+            border: none;
+            padding: clamp(11px, 2vh, 14px) clamp(24px, 6vw, 40px);
+            border-radius: 50px;
+            font-family: Arial, sans-serif;
+            font-size: clamp(0.85rem, 3.5vw, 1rem);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 77, 109, 0.45);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+            max-width: 90vw;
+        }
+
+        #final-btn:hover,
+        #final-btn:active {
+            transform: translateX(-50%) scale(1.08);
+            box-shadow: 0 14px 35px rgba(255, 77, 109, 0.55);
+        }
+
+        /* ── Final Surprise Overlay ── */
+        #final-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+            display: none;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+            color: oklch(0.97 0.02 295);
+            background: #0a0a0a;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .bg-gradient-layer {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(145deg, oklch(0.28 0.18 295), oklch(0.12 0.08 295));
+            z-index: -2;
+        }
+
+        .bg-image-layer {
+            position: fixed;
+            inset: 0;
+            background-color: oklch(0.22 0.12 295);
+            background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+            z-index: -1;
+        }
+
+        .birthday-main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: clamp(2rem, 5vh, 4rem) 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .birthday-header {
+            text-align: center;
+            margin-bottom: clamp(2rem, 6vh, 4rem);
+            animation: fadeInDown 1.2s ease-out;
+        }
+
+        .header-ornament {
+            color: oklch(0.97 0.02 295 / 0.6);
+            font-size: 0.9rem;
+            letter-spacing: 0.5em;
+            margin: 0.5rem 0;
+        }
+
+        .birthday-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(2.2rem, 7vw, 3.5rem);
+            font-weight: 700;
+            background: linear-gradient(to right, oklch(0.97 0.02 295), oklch(0.82 0.10 295));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 20px oklch(0.42 0.20 295 / 0.4);
+            margin: 0.5rem 0;
+        }
+
+        .letter-section {
+            width: 100%;
+            max-width: 680px;
+            display: flex;
+            justify-content: center;
+            animation: fadeIn 1.5s ease-out 0.3s backwards;
+        }
+
+        .letter-card {
+            width: 100%;
+            background: oklch(0.97 0.03 295 / 0.12);
+            backdrop-filter: blur(18px) saturate(1.4);
+            -webkit-backdrop-filter: blur(18px) saturate(1.4);
+            border: 1px solid oklch(0.90 0.08 295 / 0.30);
+            border-radius: 1.75rem;
+            box-shadow:
+                0 8px 48px oklch(0.22 0.20 295 / 0.45),
+                0 2px 12px oklch(0.22 0.20 295 / 0.25),
+                inset 0 1px 0 oklch(1 0 0 / 0.12);
+            padding: clamp(2rem, 6vw, 3rem) clamp(1.75rem, 5vw, 3.5rem);
+            transition: box-shadow 0.4s ease;
+        }
+
+        @media (max-width: 600px) {
+            .letter-card {
+                padding: 1.75rem 1.25rem;
+                border-radius: 1.25rem;
+            }
+        }
+
+        .letter-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            text-align: left;
+        }
+
+        .letter-spacer {
+            height: 1.4em;
+        }
+
+        .letter-line {
+            font-family: Georgia, serif;
+            font-size: clamp(1.05rem, 4.5vw, 1.25rem);
+            line-height: 1.85;
+            margin: 0;
+            color: oklch(0.97 0.03 295);
+            text-shadow: 0 1px 8px oklch(0.22 0.18 295 / 0.4);
+            opacity: 0;
+            animation: fadeInText 1s ease forwards;
+        }
+
+        @keyframes fadeInText {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .letter-line--salutation {
+            font-style: italic;
+            font-weight: 500;
+            font-size: clamp(1.1rem, 5vw, 1.35rem);
+            color: oklch(0.97 0.04 295);
+            letter-spacing: 0.01em;
+        }
+
+        .letter-line--body {
+            font-weight: 400;
+        }
+
+        .letter-line--closing {
+            font-style: italic;
+            font-weight: 500;
+            color: oklch(0.97 0.04 295);
+            letter-spacing: 0.01em;
+        }
+
+        /* Heart Decoration inside card */
+        .heart-deco {
+            text-align: center;
+            font-size: 2rem;
+            margin-top: 1.5rem;
+            animation: pulse-heart 2s infinite ease-in-out;
+            color: oklch(0.82 0.10 295);
+        }
+
+        @keyframes pulse-heart {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        /* Scrollable images at the bottom */
+        .bottom-photo-section {
+            margin-top: clamp(3rem, 8vh, 5rem);
+            width: 100%;
+            max-width: 680px;
+            animation: fadeIn 1.5s ease backwards 2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .bottom-photo-section img {
+            width: 80%;
+            max-width: 320px;
+            border-radius: 12px;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px oklch(0.22 0.20 295 / 0.5);
+            object-fit: cover;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+
+        /* Music — hidden, background only */
+        #music-box {
+            display: none;
+        }
+
+        /* Sparkle */
+        .sparkle {
+            position: fixed;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ff4d6d;
+            pointer-events: none;
+            z-index: 9999;
+            animation: spk 0.85s forwards;
+        }
+
+        @keyframes spk {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(3) translate(var(--x), var(--y));
+                opacity: 0;
+            }
+        }
+
+        /* Floating hearts background */
+        .bg-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            color: rgba(255, 100, 130, 0.22);
+            animation: bgFloat 9s linear infinite;
+        }
+
+        @keyframes bgFloat {
+            0% {
+                transform: translateY(110vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateY(-5vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* ══ RESPONSIVE ══ */
+        /* Small phones (≤380px) */
+        @media (max-width: 380px) {
+            #loading h1 {
+                font-size: 7vw;
+            }
+
+            #spin-container p {
+                font-size: 6vw !important;
+            }
+
+            .card-title {
+                font-size: 1.3rem;
+            }
+
+            .card-msg {
+                font-size: 0.88rem;
+            }
+
+            .final-photo {
+                width: 95px;
+                height: 95px;
+            }
+
+            .photo-wrap {
+                width: 145px;
+                height: 145px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #scene {
+                height: 100svh;
+                perspective-origin: 50% 42%;
+            }
+
+            .bg-heart {
+                font-size: 14px !important;
+            }
+        }
+
+        /* Tablets (601px–1024px) */
+        @media (min-width: 601px) and (max-width: 1024px) {
+            #scene {
+                perspective-origin: 50% 36%;
+            }
+        }
+
+        /* Large screens / laptops (≥1025px) */
+        @media (min-width: 1025px) {
+            #scene {
+                perspective: 1400px;
+                perspective-origin: 50% 35%;
+            }
+
+            .card-msg {
+                font-size: 1.02rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Loading -->
+    <div id="loading">
+        <h1>Happy Birthday<br>kowshi!! ❤️</h1>
+    </div>
+
+    <!-- Background hearts -->
+    <div id="hearts-bg"></div>
+
+    <!-- 3D Scene -->
+    <div id="scene">
+        <div id="drag-container">
+            <div id="spin-container">
+                <img src="images/new_img_1.png" alt="">
+                <img src="images/new_img_2.png" alt="">
+                <img src="images/new_img_3.jpg" alt="">
+                <img src="images/new_img_4.png" alt="">
+                <img src="images/new_img_5.png" alt="">
+                <img src="images/new_img_1.png" alt="">
+                <img src="images/new_img_2.png" alt="">
+                <img src="images/new_img_3.jpg" alt="">
+                <p>Happy<br>Birthday<br>kowshi!!</p>
+            </div>
+            <div id="ground"></div>
+        </div>
+    </div>
+
+
+
+    <!-- Music -->
+    <div id="music-box"></div>
+
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+    <script>
+
+        // ── Loading ──
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const l = document.getElementById('loading');
+                l.style.opacity = '0';
+                setTimeout(() => l.style.display = 'none', 1000);
+            }, 2000);
+        });
+
+        // ── Background floating hearts ──
+        const hbg = document.getElementById('hearts-bg');
+        function makeBgHeart() {
+            const h = document.createElement('div');
+            h.className = 'bg-heart';
+            h.innerHTML = '❤️';
+            h.style.left = Math.random() * 100 + '%';
+            h.style.fontSize = (Math.random() * 14 + 12) + 'px';
+            h.style.animationDuration = (Math.random() * 6 + 7) + 's';
+            hbg.appendChild(h);
+            setTimeout(() => h.remove(), 13000);
+        }
+        setInterval(makeBgHeart, 800);
+
+        // ── Sparkle on click ──
+        document.addEventListener('click', e => {
+            if (e.target.closest('#final-btn')) return; // Avoid double sparkling
+            for (let i = 0; i < 5; i++) {
+                const s = document.createElement('div');
+                s.className = 'sparkle';
+                s.style.left = e.clientX + 'px';
+                s.style.top = e.clientY + 'px';
+                const a = Math.random() * Math.PI * 2, v = Math.random() * 80 + 30;
+                s.style.setProperty('--x', Math.cos(a) * v + 'px');
+                s.style.setProperty('--y', Math.sin(a) * v + 'px');
+                document.body.appendChild(s);
+                setTimeout(() => s.remove(), 900);
+            }
+        });
+
+        // ── 3D Carousel ──
+        var radius, imgW, imgH;
+
+        var odrag = document.getElementById('drag-container');
+        var ospin = document.getElementById('spin-container');
+        var ground = document.getElementById('ground');
+        var imgs = Array.from(ospin.querySelectorAll('img'));
+
+        function setDimensions() {
+            var bw = document.body.clientWidth;
+            // Fluid scaling inside phone frame constraint
+            radius = Math.round(Math.max(140, Math.min(320, bw * 0.42)));
+            imgW = Math.round(Math.max(78, Math.min(135, bw * 0.19)));
+            imgH = Math.round(imgW * 1.5);
+
+            ospin.style.width = imgW + 'px';
+            ospin.style.height = imgH + 'px';
+            ground.style.width = radius * 3.2 + 'px';
+            ground.style.height = radius * 3.2 + 'px';
+
+            // Center text — fluid font
+            const pEl = ospin.querySelector('p');
+            if (pEl) pEl.style.fontSize = Math.max(14, Math.min(44, document.body.clientWidth * 0.075)) + 'px';
+        }
+
+        function initCarousel(delay) {
+            imgs.forEach((img, i) => {
+                img.style.width = imgW + 'px';
+                img.style.height = imgH + 'px';
+                img.style.transform = `rotateY(${i * (360 / imgs.length)}deg) translateZ(${radius}px)`;
+                img.style.transition = 'transform 1s';
+                img.style.transitionDelay = delay != null ? delay + 's' : ((imgs.length - i) / 4) + 's';
+            });
+            setDimensions();
+        }
+
+        setDimensions();
+        setTimeout(() => initCarousel(null), 1000);
+        window.addEventListener('resize', () => { setDimensions(); initCarousel(1); });
+
+        // Auto spin
+        ospin.style.animation = 'spin 18s infinite linear';
+
+        // Drag to rotate
+        var tX = 0, tY = 20, dX = 0, dY = 0;
+        function applyDrag() {
+            if (tY > 180) tY = 180;
+            if (tY < 0) tY = 0;
+            odrag.style.transform = `rotateX(${-tY}deg) rotateY(${tX}deg)`;
+        }
+
+        document.onpointerdown = function (e) {
+            clearInterval(odrag._t);
+            var sx = e.clientX, sy = e.clientY;
+            this.onpointermove = function (e) {
+                dX = e.clientX - sx; dY = e.clientY - sy;
+                tX += dX * 0.1; tY += dY * 0.1;
+                applyDrag(); sx = e.clientX; sy = e.clientY;
+            };
+            this.onpointerup = function () {
+                odrag._t = setInterval(() => {
+                    dX *= 0.95; dY *= 0.95;
+                    tX += dX * 0.1; tY += dY * 0.1;
+                    applyDrag();
+                    ospin.style.animationPlayState = 'paused';
+                    if (Math.abs(dX) < 0.5 && Math.abs(dY) < 0.5) {
+                        clearInterval(odrag._t);
+                        ospin.style.animationPlayState = 'running';
+                    }
+                }, 17);
+                this.onpointermove = this.onpointerup = null;
+            };
+            return false;
+        };
+
+        // Floating effect
+        var ft = 0;
+        setInterval(() => {
+            ft += 0.04;
+            odrag.style.transform = `rotateX(${-tY + Math.sin(ft) * 3}deg) rotateY(${tX}deg) translateY(${Math.sin(ft * 0.5) * 8}px)`;
+        }, 50);
+
+        // Mouse wheel
+        document.addEventListener('wheel', e => {
+            radius = Math.max(120, Math.min(500, radius + (e.deltaY > 0 ? -12 : 12)));
+            initCarousel(1);
+        });
+
+        // ── Music ──
+        (function () {
+            const saved = parseFloat(localStorage.getItem('music_pos') || '0');
+            // Hidden background audio — no controls shown
+            const aud = new Audio('./song2.mpeg');
+            aud.loop = true;
+            aud.currentTime = saved;
+            // Try to play immediately; if blocked, play on first user interaction
+            const tryPlay = () => aud.play().catch(() => { });
+            tryPlay();
+            document.addEventListener('click', () => tryPlay(), { once: true });
+            document.addEventListener('touchstart', () => tryPlay(), { once: true });
+            // Save position before navigating away
+            window.addEventListener('beforeunload', () => {
+                localStorage.setItem('music_pos', aud.currentTime);
+            });
+        })();
+
+
+
+    </script>
+</body>
+
+</html>
